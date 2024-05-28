@@ -46,8 +46,8 @@
 #include <gazebo/sensors/RaySensor.hh>
 #include <gazebo/sensors/SensorTypes.hh>
 #include <gazebo/transport/Node.hh>
-
 #include <sensor_msgs/PointCloud2.h>
+#include <ignition/math.hh>
 
 #include <tf/tf.h>
 
@@ -96,7 +96,7 @@ void GazeboRosVelodyneLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _s
 #endif
   world_ = physics::get_world(worldName);
 
-  last_update_time_ = world_->GetSimTime();
+  last_update_time_ = world_->SimTime();
 
   node_ = transport::NodePtr(new transport::Node());
   node_->Init(worldName);
@@ -236,8 +236,8 @@ void GazeboRosVelodyneLaser::putLaserData(common::Time &_updateTime)
   parent_ray_sensor_->SetActive(false);
 
 #if GAZEBO_MAJOR_VERSION >= 7
-  math::Angle maxAngle = parent_ray_sensor_->AngleMax();
-  math::Angle minAngle = parent_ray_sensor_->AngleMin();
+  ignition::math::Angle maxAngle = parent_ray_sensor_->AngleMax();
+  ignition::math::Angle minAngle = parent_ray_sensor_->AngleMin();
 
   double maxRange = parent_ray_sensor_->RangeMax();
   double minRange = parent_ray_sensor_->RangeMin();
@@ -247,8 +247,8 @@ void GazeboRosVelodyneLaser::putLaserData(common::Time &_updateTime)
 
   int verticalRayCount = parent_ray_sensor_->VerticalRayCount();
   int verticalRangeCount = parent_ray_sensor_->VerticalRangeCount();
-  math::Angle verticalMaxAngle = parent_ray_sensor_->VerticalAngleMax();
-  math::Angle verticalMinAngle = parent_ray_sensor_->VerticalAngleMin();
+  ignition::math::Angle verticalMaxAngle = parent_ray_sensor_->VerticalAngleMax();
+  ignition::math::Angle verticalMinAngle = parent_ray_sensor_->VerticalAngleMin();
 #else
   math::Angle maxAngle = parent_ray_sensor_->GetAngleMax();
   math::Angle minAngle = parent_ray_sensor_->GetAngleMin();
@@ -421,9 +421,9 @@ void GazeboRosVelodyneLaser::onStats( const boost::shared_ptr<msgs::WorldStatist
 {
   sim_time_  = msgs::Convert( _msg->sim_time() );
 
-  math::Pose pose;
-  pose.pos.x = 0.5*sin(0.01*sim_time_.Double());
-  gzdbg << "plugin simTime [" << sim_time_.Double() << "] update pose [" << pose.pos.x << "]\n";
+  ignition::math::Pose3d pose;
+  pose.SetX(0.5*sin(0.01*sim_time_.Double()));
+  gzdbg << "plugin simTime [" << sim_time_.Double() << "] update pose [" << pose.X() << "]\n";
 }
 
 }
